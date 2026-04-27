@@ -1,13 +1,13 @@
 # Copyright (c) 2026, BWH and contributors
 # For license information, please see license.txt
 
+from email.utils import formatdate
+
 import frappe
+from frappe.integrations.utils import make_post_request
 from frappe.model.document import Document
 
-from email.utils import formatdate
 from payu.utils import get_authorization_header
-
-from frappe.integrations.utils import make_post_request
 
 
 class PayUTransaction(Document):
@@ -21,7 +21,7 @@ class PayUTransaction(Document):
 
 		checkout_url: DF.Data | None
 		mihpayid: DF.Data | None
-		status: DF.Literal["Pending", "Success"]
+		status: DF.Literal["Pending", "Success", "Failure", "Cancelled"]
 	# end: auto-generated types
 
 	@frappe.whitelist()

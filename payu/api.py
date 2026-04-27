@@ -1,11 +1,10 @@
 from email.utils import formatdate
 
 import frappe
-from frappe.utils import get_url
 from frappe.integrations.utils import make_post_request
+from frappe.utils import get_url
 
 from .utils import get_authorization_header, get_payu_credentials
-
 
 TEST_API_ENDPOINT = "https://apitest.payu.in/v2/payments"
 PROD_API_ENDPOINT = ""
@@ -33,9 +32,9 @@ def initiate_checkout(amount: float):
 		},
 		"additionalInfo": {"txnFlow": "nonseamless"},
 		"callBackActions": {
-			"successAction": f"{get_url('/api/method/payu.api.success_callback')}",
-			"failureAction": "https://example.com/failure",
-			"cancelAction": "https://example.com/cancel",
+			"successAction": f"{get_url('/payment-success')}?event=success",
+			"failureAction": f"{get_url('/payment-success')}?event=failure",
+			"cancelAction": f"{get_url('/payment-success')}?event=cancel",
 		},
 		"billingDetails": {
 			"firstName": "John",
@@ -68,16 +67,3 @@ def initiate_checkout(amount: float):
 	txn.save()
 
 	return {"checkout_url": txn.checkout_url}
-
-
-@frappe.whitelist(allow_guest=True)
-def success_callback():
-	params = frappe.form_dict
-	txn_name = params.get("txnId")
-	txn = frappe.get_doc("PayU Transaction", txn_name)
-	txn._sync_from_payu()
-
-	if txn.status == "Success":
-		frappe.redirect_to_message("hello", "<h1>Success!</h1>")
-
-	frappe.throw("something went wrong!!")
