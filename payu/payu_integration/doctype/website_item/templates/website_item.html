@@ -1,0 +1,29 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<h1>{{ title |e }}</h1>
+
+
+<h2>{{ doc.get_formatted("price") }}</h2>
+
+<button id="buy-now" class="btn btn-primary">Buy Now</button>
+
+<script>
+const buyNowButton = document.getElementById('buy-now');
+buyNowButton.addEventListener('click', function() {
+    // call the backend to initiate checkout
+    frappe.call({
+        "method": "payu.api.initiate_checkout",
+        "args": {
+            "amount": {{ doc.price }},
+        },
+        "callback": function(r) {
+            if (r.message && r.message.checkout_url) {
+                window.location.href = r.message.checkout_url;
+            }
+        }
+    });
+});
+</script>
+
+{% endblock %}
