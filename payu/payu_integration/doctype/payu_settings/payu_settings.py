@@ -14,8 +14,12 @@ class PayUSettings(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		client_id: DF.Data | None
+		client_secret: DF.Password | None
 		key: DF.Data | None
+		mid: DF.Data | None
 		salt: DF.Password | None
+		test_mode: DF.Check
 	# end: auto-generated types
 
 	pass

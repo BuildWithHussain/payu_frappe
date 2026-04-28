@@ -5,9 +5,16 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "mid",
+  "test_mode",
+  "section_break_tdbo",
   "key",
   "column_break_zyhu",
-  "salt"
+  "salt",
+  "section_break_jfli",
+  "client_id",
+  "column_break_grqm",
+  "client_secret"
  ],
  "fields": [
   {
@@ -23,13 +30,46 @@
    "fieldname": "salt",
    "fieldtype": "Password",
    "label": "Salt"
+  },
+  {
+   "fieldname": "mid",
+   "fieldtype": "Data",
+   "label": "MID"
+  },
+  {
+   "fieldname": "section_break_tdbo",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_jfli",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "client_id",
+   "fieldtype": "Data",
+   "label": "Client ID"
+  },
+  {
+   "fieldname": "column_break_grqm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "client_secret",
+   "fieldtype": "Password",
+   "label": "Client Secret"
+  },
+  {
+   "default": "0",
+   "fieldname": "test_mode",
+   "fieldtype": "Check",
+   "label": "Test Mode"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-04-27 11:13:59.954292",
+ "modified": "2026-04-28 11:30:26.797799",
  "modified_by": "Administrator",
  "module": "PayU Integration",
  "name": "PayU Settings",

@@ -1,0 +1,121 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-28 11:00:47.068246",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "amount",
+  "description",
+  "column_break_tydf",
+  "url",
+  "status",
+  "invoice_id",
+  "customer_details_section",
+  "customer_name",
+  "customer_phone",
+  "column_break_cdxk",
+  "customer_email"
+ ],
+ "fields": [
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Description",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "customer_details_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Details"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer Name",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "customer_phone",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer Phone",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "column_break_cdxk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer Email",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "column_break_tydf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "url",
+   "fieldtype": "Data",
+   "label": "URL",
+   "options": "URL",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Unpaid\nPaid\nExpired"
+  },
+  {
+   "fieldname": "invoice_id",
+   "fieldtype": "Data",
+   "label": "Invoice ID",
+   "read_only": 1,
+   "unique": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-28 12:18:34.003416",
+ "modified_by": "Administrator",
+ "module": "PayU Integration",
+ "name": "PayU Payment Link",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
