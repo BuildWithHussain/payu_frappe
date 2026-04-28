@@ -5,7 +5,7 @@ import frappe
 from frappe.model.document import Document
 
 from payu.utils import get_endpoint, get_access_token, get_payu_credentials
-from frappe.integrations.utils import make_post_request
+from frappe.integrations.utils import make_post_request, create_request_log
 
 
 class PayUPaymentLink(Document):
@@ -34,7 +34,7 @@ class PayUPaymentLink(Document):
 		headers = {
 			"merchantId": get_payu_credentials().mid,
 			"Content-Type": "application/json",
-			"Authorization": f"Bearer {token}"
+			"Authorization": f"Bearer {token}",
 		}
 
 		self.invoice_id = frappe.generate_hash(length=16)
@@ -43,13 +43,16 @@ class PayUPaymentLink(Document):
 			"subAmount": self.amount,
 			"source": "API",
 			"description": self.description,
-			"udf": {
-				"udf1": self.invoice_id
-			}
+			"udf": {"udf1": self.invoice_id},
 		}
 
-		response = make_post_request(payment_link_endpoint, headers=headers, json=payload)
+		integration_request = create_request_log(payload, is_remote_request=1, service_name="PayU API", request_headers=headers)
 
-		result = response["result"]
+		try:
+			response = make_post_request(payment_link_endpoint, headers=headers, json=payload)
+			result = response["result"]
+			integration_request.handle_success(response)
+		except Exception:
+			integration_request.handle_failure()
+
 		self.url = result["paymentLink"]
-
