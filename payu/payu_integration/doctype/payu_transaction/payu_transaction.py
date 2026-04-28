@@ -19,7 +19,9 @@ class PayUTransaction(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		amount: DF.Currency
 		checkout_url: DF.Data | None
+		currency: DF.Link | None
 		mihpayid: DF.Data | None
 		status: DF.Literal["Pending", "Success", "Failure", "Cancelled"]
 	# end: auto-generated types
@@ -31,28 +33,29 @@ class PayUTransaction(Document):
 
 
 	def _sync_from_payu(self):
-		API_ENDPOINT = "https://test.payu.in/v3/transaction"
-
-		date = formatdate()
-		payload = {
-			"txnId":[self.name]
-		}
-		body = frappe.as_json(payload)
-
-		headers = {
-			"Content-Type": "application/json",
-			"accept": "application/json",
-			"Info-Command": "verify_payment",
-			"date": date,
-			"authorization": get_authorization_header(body, date)
-		}
-
-		response = make_post_request(API_ENDPOINT, headers=headers, data=body)
-
-		frappe.errprint(response)
-
+		response = get_transactions_from_payu([self.name])
 		result = response['result'][0]
 
 		self.mihpayid = result['mihpayId']
 		self.status = result['status'].capitalize() # success -> "Success"
 		self.save(ignore_permissions=True)
+
+
+def get_transactions_from_payu(txn_ids: list[str]):
+	API_ENDPOINT = "https://test.payu.in/v3/transaction"
+
+	date = formatdate()
+	payload = {
+		"txnId":txn_ids
+	}
+	body = frappe.as_json(payload)
+
+	headers = {
+		"Content-Type": "application/json",
+		"accept": "application/json",
+		"Info-Command": "verify_payment",
+		"date": date,
+		"authorization": get_authorization_header(body, date)
+	}
+
+	return make_post_request(API_ENDPOINT, headers=headers, data=body)

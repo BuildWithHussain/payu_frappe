@@ -11,13 +11,18 @@ PROD_API_ENDPOINT = ""
 
 
 @frappe.whitelist()
-def initiate_checkout(amount: float):
+def initiate_checkout(product_name: str, qty: int = 1):
 	date = formatdate()
 	credentials = get_payu_credentials()
+
+	price = frappe.db.get_value("Website Item", product_name, "price")
+	amount = price * qty
 
 	txn = frappe.get_doc(
 		{
 			"doctype": "PayU Transaction",
+			"amount": amount,
+			"currency": "INR"
 		}
 	).insert()
 

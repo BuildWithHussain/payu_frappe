@@ -15,7 +15,8 @@ buyNowButton.addEventListener('click', function() {
     frappe.call({
         "method": "payu.api.initiate_checkout",
         "args": {
-            "amount": {{ doc.price }},
+            "product_name": '{{ doc.name }}',
+            "qty": 1
         },
         "callback": function(r) {
             if (r.message && r.message.checkout_url) {

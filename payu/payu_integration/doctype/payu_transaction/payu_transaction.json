@@ -8,7 +8,9 @@
   "status",
   "mihpayid",
   "column_break_bwhb",
-  "checkout_url"
+  "checkout_url",
+  "amount",
+  "currency"
  ],
  "fields": [
   {
@@ -35,12 +37,24 @@
    "fieldname": "mihpayid",
    "fieldtype": "Data",
    "label": "MihpayID"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "options": "currency"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-27 12:12:36.964866",
+ "modified": "2026-04-28 10:12:30.470338",
  "modified_by": "Administrator",
  "module": "PayU Integration",
  "name": "PayU Transaction",

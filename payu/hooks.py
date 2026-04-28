@@ -143,23 +143,11 @@ app_license = "mit"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"payu.tasks.all"
-# 	],
-# 	"daily": [
-# 		"payu.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"payu.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"payu.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"payu.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"hourly": [
+		"payu.tasks.sync_pending_transactions"
+	],
+}
 
 # Testing
 # -------
