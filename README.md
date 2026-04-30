@@ -44,7 +44,7 @@ You need a PayU India merchant account. Sign up at [payu.in](https://payu.in/), 
 | **Client ID** | PayU OAuth credentials — *Settings → API Configuration → OAuth* (used for Payment Links).         |
 | **Client Secret** | Same screen as Client ID.                                                                      |
 
-For sandbox testing, request **test credentials** from PayU support — they hand out a separate test MID/Key/Salt that hits the UAT environment. The "Test Mode" toggle in PayU Settings switches all API calls to PayU's UAT endpoints (`apitest.payu.in`, `uatoneapi.payu.in`, `test.payu.in`).
+For sandbox testing, switch your PayU dashboard to **Test Mode** — it surfaces a separate set of test MID/Key/Salt without needing to contact support. Plug those into PayU Settings here and tick the *Test Mode* checkbox; all API calls then route to PayU's UAT endpoints (`apitest.payu.in`, `uatoneapi.payu.in`, `test.payu.in`).
 
 ---
 
