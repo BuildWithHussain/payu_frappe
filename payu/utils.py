@@ -1,3 +1,4 @@
+import hmac
 from hashlib import sha512
 
 import frappe
@@ -15,6 +16,10 @@ ENDPOINT_MAPPING = {
 	"payment_links": {
 		"live": "",
 		"test": "https://uatoneapi.payu.in/payment-links"
+	},
+	"refunds": {
+		"live": "https://info.payu.in/merchant/postservice.php?form=2",
+		"test": "https://test.payu.in/merchant/postservice.php?form=2"
 	}
 }
 
@@ -50,6 +55,45 @@ def get_authorization_header(body: str, date: str) -> str:
 	signature = sha512(f"{body}|{date}|{salt}".encode()).hexdigest()
 
 	return f'hmac username="{key}", algorithm="sha512", headers="date", signature="{signature}"'
+
+
+def verify_webhook_hash(data: dict) -> bool:
+	"""Verify a webhook payload from PayU using the reverse hash formula.
+
+	sha512(SALT|status||||||udf5|udf4|udf3|udf2|udf1|email|firstname|productinfo|amount|txnid|key)
+	If `additional_charges` is in the payload, it is prepended to the string.
+	Ref: https://docs.payu.in/docs/hashing-request-and-response
+	"""
+	received_hash = data.get("hash") or ""
+	if not received_hash:
+		return False
+
+	credentials = get_payu_credentials()
+
+	parts = [
+		credentials["salt"],
+		data.get("status", ""),
+		"", "", "", "", "",
+		data.get("udf5", ""),
+		data.get("udf4", ""),
+		data.get("udf3", ""),
+		data.get("udf2", ""),
+		data.get("udf1", ""),
+		data.get("email", ""),
+		data.get("firstname", ""),
+		data.get("productinfo", ""),
+		data.get("amount", ""),
+		data.get("txnid", ""),
+		credentials["key"],
+	]
+
+	additional_charges = data.get("additional_charges")
+	if additional_charges:
+		parts.insert(0, additional_charges)
+
+	computed_hash = sha512("|".join(parts).encode()).hexdigest()
+
+	return hmac.compare_digest(computed_hash, received_hash)
 
 
 def get_access_token(scope: str) -> str:

@@ -4,7 +4,7 @@ import frappe
 from frappe.integrations.utils import make_post_request
 from frappe.utils import get_url
 
-from .utils import get_authorization_header, get_payu_credentials, get_endpoint
+from .utils import get_authorization_header, get_payu_credentials, get_endpoint, verify_webhook_hash
 
 TEST_API_ENDPOINT = "https://apitest.payu.in/v2/payments"
 PROD_API_ENDPOINT = ""
@@ -71,6 +71,10 @@ def initiate_checkout(product_name: str, qty: int = 1):
 def webhook():
 	data = frappe.form_dict
 	frappe.errprint(data)
+
+	if not verify_webhook_hash(data):
+		frappe.log_error("PayU webhook hash verification failed", message=frappe.as_json(data))
+		frappe.throw("Invalid webhook signature", frappe.AuthenticationError)
 
 	if data["payment_source"] != "apiIntInvoice":
 		return
