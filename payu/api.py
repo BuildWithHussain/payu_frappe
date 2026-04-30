@@ -70,24 +70,67 @@ def initiate_checkout(product_name: str, qty: int = 1):
 @frappe.whitelist(allow_guest=True)
 def webhook():
 	data = frappe.form_dict
-	frappe.errprint(data)
 
 	if not verify_webhook_hash(data):
 		frappe.log_error("PayU webhook hash verification failed", message=frappe.as_json(data))
 		frappe.throw("Invalid webhook signature", frappe.AuthenticationError)
 
-	if data["payment_source"] != "apiIntInvoice":
+	payload = {k: v for k, v in data.items() if k != "cmd"}
+
+	log = frappe.get_doc({
+		"doctype": "PayU Webhook Log",
+		"status": "Pending",
+		"payment_source": payload.get("payment_source"),
+		"txnid": payload.get("txnid"),
+		"mihpayid": payload.get("mihpayid"),
+		"payload": frappe.as_json(payload),
+	}).insert(ignore_permissions=True)
+
+	frappe.enqueue(
+		process_webhook,
+		log_name=log.name,
+		queue="short",
+		job_id=f"payu_webhook_{log.name}",
+		deduplicate=True,
+	)
+
+
+
+def process_webhook(log_name: str):
+	log = frappe.get_doc("PayU Webhook Log", log_name)
+	try:
+		data = frappe.parse_json(log.payload) or {}
+		_handle_webhook_event(data)
+	except Exception:
+		frappe.db.set_value(
+			"PayU Webhook Log",
+			log_name,
+			{"status": "Failed", "error": frappe.get_traceback()},
+		)
+		raise
+
+	frappe.db.set_value(
+		"PayU Webhook Log",
+		log_name,
+		{
+			"status": "Processed",
+			"processed_at": frappe.utils.now_datetime(),
+			"error": None,
+		},
+	)
+
+
+def _handle_webhook_event(data: dict):
+	if data.get("payment_source") != "apiIntInvoice":
 		return
 
-	invioce_id = data["udf1"]
+	invoice_id = data["udf1"]
+	pl = frappe.get_doc("PayU Payment Link", {"invoice_id": invoice_id})
 
-	pl = frappe.get_doc("PayU Payment Link", {"invoice_id": invioce_id})
-	pl.status = data["status"].capitalize()
-
-	if pl.status == "Success":
-		pl.status = "Paid"
-
-	# pl.customer_email = data["email"]
+	status = (data.get("status") or "").capitalize()
+	if status == "Success":
+		status = "Paid"
+	pl.status = status
 	pl.save(ignore_permissions=True)
 
 
